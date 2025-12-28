@@ -264,3 +264,21 @@ export const verifyOtp = TryCatch(async (req, res) => {
     }
   });
 });
+
+export const myProfile = TryCatch(async (req, res) => {
+  
+
+  if (!req.user) {
+    res.status(404).json({
+      message: "User not found",
+    });
+    return;
+  }
+  
+  const user = req.user;
+  
+  res.status(200).json({
+    message: "User profile fetched successfully.",
+    user,
+  });
+});
