@@ -10,13 +10,13 @@ const sendMail = async (
     port: 465,
     secure: true,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: process.env.USER_EMAIL,
+      pass: process.env.USER_PASSWORD,
     },
   });
 
   await transport.sendMail({
-    from: `"${process.env.SMTP_FROM_NAME}" <${process.env.SMTP_FROM_EMAIL}>`,
+    from: `"${process.env.USER_EMAIL}" <${process.env.USER_EMAIL}>`,
     to,
     subject,
     html,

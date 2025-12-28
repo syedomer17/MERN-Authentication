@@ -7,6 +7,7 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import sendMail from "../utils/sendMail";
+import { getVerifyEmailHtml } from "../template/html";
 
 type ZodFormattedError = {
   field: string;
@@ -74,7 +75,7 @@ export const registerUser = TryCatch(async (req, res) => {
   await redisClient.set(verifyKey, dataToStore, { EX: 300});
 
   const subject = "Verify your email";
-  const html = ``;
+  const html =getVerifyEmailHtml({ email, token: verifyToken });
 
   await sendMail(email, subject, html);
 
