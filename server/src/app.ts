@@ -1,24 +1,35 @@
-import express from 'express';
-import connectDB from './config/db';
+import express, { Application } from "express";
+import connectDB from "./config/db";
+import { connectRedis } from "./config/redis";
 
-// import routes here
-import userRoutes from './routes/user';
+// routes
+import userRoutes from "./routes/user";
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-connectDB();
+const app: Application = express();
+const PORT: number = Number(process.env.PORT) || 5000;
 
 // Middleware
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+// Routes
+app.get("/", (_req, res) => {
+  res.send("Hello, World!");
 });
 
-// Use routes here
-app.use('/api/v1', userRoutes);
+// User Routes
+app.use("/api/v1", userRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+try {
+  connectDB();
+
+  connectRedis();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+} catch (error) {
+  console.error("🔥 Server startup failed:", error);
+  process.exit(1);
+}
+
+export default app;
