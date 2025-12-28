@@ -220,4 +220,32 @@ export const verifyOtp = TryCatch(async (req, res) => {
     });
     return;
   }
+
+  const otpKey = `otp:${email}`;
+
+  const storedOtpString = await redisClient.get(otpKey);
+
+  if (!storedOtpString) {
+    res.status(400).json({
+      message: "OTP is invalid or has expired.",
+    });
+    return;
+  };
+
+  const storedOtp = JSON.parse(storedOtpString); 
+
+  if (storedOtp.otp !== otp) {
+    res.status(400).json({
+      message: "Invalid OTP.",
+    });
+    return;
+  };
+
+  await redisClient.del(otpKey);
+
+  let user = await User.findOne({ email });
+
+  res.status(200).json({
+    message: "OTP verified successfully. You are now logged in.",
+  });
 });
