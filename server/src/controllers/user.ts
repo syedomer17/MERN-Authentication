@@ -9,6 +9,7 @@ import crypto from "crypto";
 import sendMail from "../utils/sendMail";
 import { getOtpHtml, getVerifyEmailHtml } from "../template/html";
 import { loginUserSchema } from "../config/zod";
+import { generateToken } from "../utils/generateToken";
 
 type ZodFormattedError = {
   field: string;
@@ -200,7 +201,7 @@ export const loginUser = TryCatch(async (req, res) => {
 
   const subject = "Your Login OTP Code";
 
-  const html = getOtpHtml({email, otp});
+  const html = getOtpHtml({ email, otp });
 
   await sendMail(email, subject, html);
 
@@ -213,7 +214,7 @@ export const loginUser = TryCatch(async (req, res) => {
 
 export const verifyOtp = TryCatch(async (req, res) => {
   const { email, otp } = req.body;
-  
+
   if (!email || !otp) {
     res.status(400).json({
       message: "Email and OTP are required.",
@@ -230,22 +231,36 @@ export const verifyOtp = TryCatch(async (req, res) => {
       message: "OTP is invalid or has expired.",
     });
     return;
-  };
+  }
 
-  const storedOtp = JSON.parse(storedOtpString); 
+  const storedOtp = JSON.parse(storedOtpString);
 
   if (storedOtp.otp !== otp) {
     res.status(400).json({
       message: "Invalid OTP.",
     });
     return;
-  };
+  }
 
   await redisClient.del(otpKey);
 
-  let user = await User.findOne({ email });
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(404).json({
+      message: "User not found",
+    });
+    return;
+  }
+
+  const tokenData = await generateToken(user._id.toString(), res);
 
   res.status(200).json({
-    message: "OTP verified successfully. You are now logged in.",
+    message: `Welcome ${user.name}`,
+    user:{
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    }
   });
 });
