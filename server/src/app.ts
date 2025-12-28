@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
+import cookiesParser from "cookie-parser";
 
 // routes
 import userRoutes from "./routes/user";
@@ -10,6 +11,7 @@ const PORT: number = Number(process.env.PORT) || 5000;
 
 // Middleware
 app.use(express.json());
+app.use(cookiesParser());
 
 // Routes
 app.get("/", (_req, res) => {
