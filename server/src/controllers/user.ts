@@ -9,7 +9,7 @@ import crypto from "crypto";
 import sendMail from "../utils/sendMail";
 import { getOtpHtml, getVerifyEmailHtml } from "../template/html";
 import { loginUserSchema } from "../config/zod";
-import { generateToken } from "../utils/generateToken";
+import { generateAccessToken, generateToken, verifyRefreshToken } from "../utils/generateToken";
 
 type ZodFormattedError = {
   field: string;
@@ -280,5 +280,31 @@ export const myProfile = TryCatch(async (req, res) => {
   res.status(200).json({
     message: "User profile fetched successfully.",
     user,
+  });
+});
+
+export const refreshToken = TryCatch(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    res.status(401).json({
+      message: "Invalid Refresh token.",
+    });
+    return;
+  }
+
+  const decoded = await verifyRefreshToken(refreshToken);
+
+  if (!decoded) {
+    res.status(401).json({
+      message: "Invalid Refresh token.",
+    });
+    return;
+  }
+
+  generateAccessToken(decoded.id, res);
+
+  res.status(200).json({
+    message: "Access token refreshed successfully.",
   });
 });
