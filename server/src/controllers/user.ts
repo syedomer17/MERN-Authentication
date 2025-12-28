@@ -9,7 +9,7 @@ import crypto from "crypto";
 import sendMail from "../utils/sendMail";
 import { getOtpHtml, getVerifyEmailHtml } from "../template/html";
 import { loginUserSchema } from "../config/zod";
-import { generateAccessToken, generateToken, verifyRefreshToken } from "../utils/generateToken";
+import { generateAccessToken, generateToken, revokeRefreshToken, verifyRefreshToken } from "../utils/generateToken";
 
 type ZodFormattedError = {
   field: string;
@@ -308,3 +308,24 @@ export const refreshToken = TryCatch(async (req, res) => {
     message: "Access token refreshed successfully.",
   });
 });
+
+export const logoutUser = TryCatch(async (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(401).json({
+      message: "Unauthorized.",
+    });
+    return;
+  }
+  
+  await revokeRefreshToken(userId.toString());
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  await redisClient.del(`refreshToken:${userId}`);
+
+  res.status(200).json({
+    message: "Logged out successfully.",
+  });
+})

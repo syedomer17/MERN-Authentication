@@ -85,3 +85,7 @@ export const generateAccessToken = (id: string, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 }
+
+export const revokeRefreshToken = async (userId: string) => {
+  await redisClient.del(`refreshToken:${userId}`);
+}
