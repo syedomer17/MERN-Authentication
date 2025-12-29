@@ -6,11 +6,17 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import api from "../components/apiIntercepter";
+import { toast } from "react-toastify";
+
 
 export interface User {
   _id: string;
   name: string;
   email: string;
+}
+
+interface LogoutResponse {
+  message: string;
 }
 
 interface AppContextType {
@@ -19,6 +25,7 @@ interface AppContextType {
   isAuth: boolean;
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
   fetchUser: () => Promise<void>;
+  logOutUser: () => Promise<void>;
 }
 
 interface AppProviderProps {
@@ -29,16 +36,13 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: AppProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isAuth, setIsAuth] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const fetchUser = async (): Promise<void> => {
     setLoading(true);
     try {
-      const { data } = await api.get<User>(
-        `/api/v1/me`
-      );
-
+      const { data } = await api.get<User>("/api/v1/me");
       setUser(data);
       setIsAuth(true);
     } catch {
@@ -46,6 +50,17 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       setIsAuth(false);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const logOutUser = async (): Promise<void> => {
+    try {
+      const { data } = await api.post<LogoutResponse>("/api/v1/logout");
+      toast.success(data.message);
+      setUser(null);
+      setIsAuth(false);
+    } catch {
+      toast.error("Error logging out");
     }
   };
 
@@ -61,6 +76,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         isAuth,
         setIsAuth,
         fetchUser,
+        logOutUser,
       }}
     >
       {children}
