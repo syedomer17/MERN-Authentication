@@ -36,8 +36,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     setLoading(true);
     try {
       const { data } = await api.get<User>(
-        `/api/v1/me`,
-        { withCredentials: true }
+        `/api/v1/me`
       );
 
       setUser(data);
