@@ -145,38 +145,38 @@ letter-spacing: 6px !important;
 </style>
 </head>
 <body>
-<table role="presentation" class="wrapper" width="100%" border="0" cellspacing="0" cellpadding="0">
+<table role="presentation" className="wrapper" width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
-<td align="center" class="p-24">
-<table role="presentation" class="container" border="0" cellspacing="0" cellpadding="0">
+<td align="center" className="p-24">
+<table role="presentation" className="container" border="0" cellspacing="0" cellpadding="0">
 <!-- Header -->
 <tr>
-<td class="header">
-<span class="brand">Authentication App</span>
+<td className="header">
+<span className="brand">Authentication App</span>
 </td>
 </tr>
 <!-- Body -->
 <tr>
-<td class="p-32">
-<h1 class="title">Verify your email - ${email}</h1>
-<p class="text">
+<td className="p-32">
+<h1 className="title">Verify your email - ${email}</h1>
+<p className="text">
 Use the verification code below to complete your sign-in to Authentication App.
 </p>
 <!-- OTP -->
-<table role="presentation" class="otp-wrap" border="0" cellspacing="0" cellpadding="0">
+<table role="presentation" className="otp-wrap" border="0" cellspacing="0" cellpadding="0">
 <tr>
 <td align="center">
-<div class="otp">${otp}</div>
+<div className="otp">${otp}</div>
 </td>
 </tr>
 </table>
-<p class="muted">This code will expire in <strong>5 minutes</strong>.</p>
-<p class="muted">If this wasn’t initiated, this email can be safely ignored.</p>
+<p className="muted">This code will expire in <strong>5 minutes</strong>.</p>
+<p className="muted">If this wasn’t initiated, this email can be safely ignored.</p>
 </td>
 </tr>
 <!-- Footer -->
 <tr>
-<td class="footer">
+<td className="footer">
 © 2025 Authentication App. All rights reserved.
 </td>
 </tr>
@@ -310,21 +310,21 @@ word-break: break-all;
 </style>
 </head>
 <body>
-<table role="presentation" class="wrapper" width="100%" border="0" cellspacing="0" cellpadding="0">
+<table role="presentation" className="wrapper" width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
-<td align="center" class="p-24">
-<table role="presentation" class="container" border="0" cellspacing="0" cellpadding="0">
+<td align="center" className="p-24">
+<table role="presentation" className="container" border="0" cellspacing="0" cellpadding="0">
 <!-- Header -->
 <tr>
-<td class="header">
-<span class="brand">${appName}</span>
+<td className="header">
+<span className="brand">${appName}</span>
 </td>
 </tr>
 <!-- Body -->
 <tr>
-<td class="p-32">
-<h1 class="title">Verify your account - ${email}</h1>
-<p class="text">
+<td className="p-32">
+<h1 className="title">Verify your account - ${email}</h1>
+<p className="text">
 Thanks for registering with ${appName}. Click the button below to verify your account.
 </p>
 <!-- Button -->
@@ -333,24 +333,24 @@ Thanks for registering with ${appName}. Click the button below to verify your ac
 <tr>
 <td align="center">
 
-<a class="btn" href="${verifyUrl}" target="_blank" rel="noopener">Verify account</a>
+<a className="btn" href="${verifyUrl}" target="_blank" rel="noopener">Verify account</a>
 </td>
 </tr>
 </table>
-<p class="muted">
+<p className="muted">
 If the button doesn’t work, copy and paste this link into your browser:
 </p>
-<p class="muted">
-<a class="link" href="${verifyUrl}" target="_blank" rel="noopener">${verifyUrl}</a>
+<p className="muted">
+<a className="link" href="${verifyUrl}" target="_blank" rel="noopener">${verifyUrl}</a>
 </p>
-<p class="muted">
+<p className="muted">
 If this wasn’t you, you can safely ignore this email.
 </p>
 </td>
 </tr>
 <!-- Footer -->
 <tr>
-<td class="footer">
+<td className="footer">
 © ${new Date().getFullYear()} ${appName}. All rights reserved.
 </td>
 </tr>

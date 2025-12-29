@@ -207,13 +207,22 @@ export const loginUser = TryCatch(async (req, res) => {
 
   await redisClient.set(rateLimitKey, "true", { EX: 60 });
 
+  res.cookie("otp_email", email, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 5 * 60 * 1000,
+  });
+
   res.status(200).json({
     message: "OTP has been sent to your email. It will expire in 5 minutes.",
   });
 });
 
 export const verifyOtp = TryCatch(async (req, res) => {
-  const { email, otp } = req.body;
+  const { otp } = req.body;
+
+  const email = req.cookies.otp_email;
 
   if (!email || !otp) {
     res.status(400).json({

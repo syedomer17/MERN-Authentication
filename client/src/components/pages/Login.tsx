@@ -1,99 +1,119 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { server } from "../../main";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import { server } from "../../main";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+interface LoginResponse {
+  message: string;
+}
+
+const Login: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
 
-    if (!email || !password) {
-        toast.error("Please fill all the fields");
-        return;
+    if (!email.trim() || !password.trim()) {
+      toast.error("Email and password are required");
+      return;
     }
 
     try {
-        const {data} = await axios.post(`${server}/api/v1/login`, { email, password });
-        toast.success(data.message);
-        navigate("/verify-otp");
+      setLoading(true);
 
-    } catch (error) {
-        toast.error("Login failed. Please try again.");
-    }finally{
-        setLoading(false);
+      const { data } = await axios.post<LoginResponse>(
+        `${server}/api/v1/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+
+      toast.success(data.message);
+      navigate("/verify-otp");
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      toast.error(
+        error.response?.data?.message || "Login failed. Try again."
+      );
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <>
-      <section className="text-gray-600 body-font">
-        <div className="container px-5 py-24 mx-auto flex flex-wrap items-center">
-          <div className="lg:w-3/5 md:w-1/2 md:pr-16 lg:pr-0 pr-0">
-            <h1 className="title-font font-medium text-3xl text-gray-900">
-              Slow-carb next level shoindcgoitch ethical authentic, poko
-              scenester
-            </h1>
-            <p className="leading-relaxed mt-4">
-              Poke slow-carb mixtape knausgaard, typewriter street art gentrify
-              hammock starladder roathse. Craies vegan tousled etsy austin.
-            </p>
-          </div>
-          <form onSubmit={handleSubmit} className="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
-            <h2 className="text-gray-900 text-lg font-medium title-font mb-5">
-              Sign Up
-            </h2>
-            <div className="relative mb-4">
-              <label
-                htmlFor="email"
-                className="leading-7 text-sm text-gray-600"
-              >
-                Email
-              </label>
-              <input
-                type="text"
-                id="email"
-                name="email"
-                className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="relative mb-4">
-              <label
-                htmlFor="password"
-                className="leading-7 text-sm text-gray-600"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <button className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </button>
-            <Link to="/register">
-              <p className="text-xs text-gray-500 mt-3">
-                Don't have an account? <span className="text-blue-600 font-bold">Register</span>
-              </p>
-            </Link>
-          </form>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
+      <div className="w-full max-w-md bg-slate-950 border border-slate-800 rounded-2xl shadow-xl p-8">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-semibold text-white">
+            Welcome back
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Login to continue
+          </p>
         </div>
-      </section>
-    </>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm text-slate-300 mb-1"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm text-slate-300 mb-1"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed py-2.5 text-sm font-medium text-white transition"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="text-center text-sm text-slate-400 mt-6">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-indigo-400 hover:text-indigo-300 font-medium"
+          >
+            Register
+          </Link>
+        </p>
+      </div>
+    </div>
   );
 };
 
