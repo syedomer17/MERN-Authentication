@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   createContext,
   useContext,
@@ -6,7 +5,7 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { server } from "../main";
+import api from "../components/apiIntercepter";
 
 export interface User {
   _id: string;
@@ -36,8 +35,8 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const fetchUser = async (): Promise<void> => {
     setLoading(true);
     try {
-      const { data } = await axios.get<User>(
-        `${server}/api/v1/me`,
+      const { data } = await api.get<User>(
+        `/api/v1/me`,
         { withCredentials: true }
       );
 
