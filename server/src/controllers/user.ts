@@ -209,7 +209,7 @@ export const loginUser = TryCatch(async (req, res) => {
 
   res.cookie("otp_email", email, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "strict",
     maxAge: 5 * 60 * 1000,
   });

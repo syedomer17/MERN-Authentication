@@ -38,12 +38,14 @@ export const generateToken = async (
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     sameSite: "strict",
+    secure: true,
     maxAge: 24 * 60 * 60 * 1000,
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     sameSite: "strict",
+    secure: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -82,6 +84,7 @@ export const generateAccessToken = (id: string, res: Response) => {
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     sameSite: "strict",
+    secure: true,
     maxAge: 24 * 60 * 60 * 1000,
   });
 }
