@@ -3,12 +3,13 @@ import {
   useContext,
   useEffect,
   useState,
+  type ReactNode,
 } from "react";
-import type { ReactNode } from "react";
 import api from "../components/apiIntercepter";
 import { toast } from "react-toastify";
 
 export interface User {
+  role: 'user' | 'admin';
   _id: string;
   name: string;
   email: string;
@@ -20,27 +21,20 @@ interface LogoutResponse {
 
 interface AppContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   loading: boolean;
   isAuth: boolean;
-  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
   fetchUser: () => Promise<void>;
-  logOutUser: () => Promise<void>; 
+  logOutUser: () => Promise<void>;
 }
 
-interface AppProviderProps {
-  children: ReactNode;
-}
+const AppContext = createContext<AppContextType | null>(null);
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
-export const AppProvider = ({ children }: AppProviderProps) => {
+export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
 
-  const fetchUser = async (): Promise<void> => {
-    setLoading(true);
+  const fetchUser = async () => {
     try {
       const { data } = await api.get<User>("/api/v1/me");
       setUser(data);
@@ -49,11 +43,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       setUser(null);
       setIsAuth(false);
     } finally {
-      setLoading(false);
+      setLoading(false); // 🚨 THIS LINE SAVES YOUR APP
     }
   };
 
-  const logOutUser = async (): Promise<void> => {
+  const logOutUser = async () => {
     try {
       const { data } = await api.post<LogoutResponse>("/api/v1/logout");
       toast.success(data.message);
@@ -72,10 +66,8 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     <AppContext.Provider
       value={{
         user,
-        setUser,
         loading,
         isAuth,
-        setIsAuth,
         fetchUser,
         logOutUser,
       }}
@@ -85,10 +77,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   );
 };
 
-export const useAppData = (): AppContextType => {
+export const useAppData = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error("useAppData must be used within AppProvider");
+    throw new Error("useAppData must be used inside AppProvider");
   }
   return context;
 };

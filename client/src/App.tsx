@@ -12,6 +12,7 @@ import { useAppData } from "./context/AppContext";
 
 const App = () => {
   const { isAuth, loading } = useAppData();
+  console.log({ loading, isAuth });
 
   if (loading) {
     return <Loading />;
@@ -23,7 +24,7 @@ const App = () => {
         <Route path="/" element={isAuth ? <Home /> : <Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/verify" element={<Verify />} />
+        <Route path="/token/:token" element={<Verify />} />
         <Route
           path="/verify-otp"
           element={isAuth ? <VerifyOtp /> : <Login />}
