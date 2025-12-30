@@ -9,7 +9,12 @@ import crypto from "crypto";
 import sendMail from "../utils/sendMail";
 import { getOtpHtml, getVerifyEmailHtml } from "../template/html";
 import { loginUserSchema } from "../config/zod";
-import { generateAccessToken, generateToken, revokeRefreshToken, verifyRefreshToken } from "../utils/generateToken";
+import {
+  generateAccessToken,
+  generateToken,
+  revokeRefreshToken,
+  verifyRefreshToken,
+} from "../utils/generateToken";
 import { generateCsrfToken } from "../config/csrf.Middleware";
 
 type ZodFormattedError = {
@@ -267,26 +272,24 @@ export const verifyOtp = TryCatch(async (req, res) => {
 
   res.status(200).json({
     message: `Welcome ${user.name}`,
-    user:{
+    user: {
       _id: user._id,
       name: user.name,
       email: user.email,
-    }
+    },
   });
 });
 
 export const myProfile = TryCatch(async (req, res) => {
-  
-
   if (!req.user) {
     res.status(404).json({
       message: "User not found",
     });
     return;
   }
-  
+
   const user = req.user;
-  
+
   res.status(200).json({
     message: "User profile fetched successfully.",
     user,
@@ -327,7 +330,7 @@ export const logoutUser = TryCatch(async (req, res) => {
     });
     return;
   }
-  
+
   await revokeRefreshToken(userId.toString());
 
   res.clearCookie("accessToken");
@@ -358,4 +361,10 @@ export const refreshCSRF = TryCatch(async (req, res) => {
     message: "CSRF token refreshed successfully.",
     csrfToken: newCSRFToken,
   });
-})
+});
+
+export const adminController = TryCatch(async (req, res) => {
+  res.status(200).json({
+    message: "Welcome Admin! You have access to this protected route.",
+  });
+});
