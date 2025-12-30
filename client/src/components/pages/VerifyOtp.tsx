@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { server } from "../../main";
+import { useAppData } from "../../context/AppContext";
 
 interface VerifyOtpResponse {
   message: string;
@@ -15,6 +16,8 @@ const VerifyOtp = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
+
+  const {setIsAuth, setUser } = useAppData();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,6 +37,8 @@ const VerifyOtp = () => {
       );
 
       toast.success(data.message);
+      setIsAuth(true);
+      setUser((data as any).user);
       navigate("/dashboard");
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;

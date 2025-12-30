@@ -10,6 +10,7 @@ import sendMail from "../utils/sendMail";
 import { getOtpHtml, getVerifyEmailHtml } from "../template/html";
 import { loginUserSchema } from "../config/zod";
 import { generateAccessToken, generateToken, revokeRefreshToken, verifyRefreshToken } from "../utils/generateToken";
+import { generateCsrfToken } from "../config/csrf.Middleware";
 
 type ZodFormattedError = {
   field: string;
@@ -331,10 +332,30 @@ export const logoutUser = TryCatch(async (req, res) => {
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+  res.clearCookie("otp_email");
+  res.clearCookie("csrfToken");
 
   await redisClient.del(`refreshToken:${userId}`);
 
   res.status(200).json({
     message: "Logged out successfully.",
+  });
+});
+
+export const refreshCSRF = TryCatch(async (req, res) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    res.status(401).json({
+      message: "Unauthorized.",
+    });
+    return;
+  }
+
+  const newCSRFToken = await generateCsrfToken(userId, res);
+
+  res.status(200).json({
+    message: "CSRF token refreshed successfully.",
+    csrfToken: newCSRFToken,
   });
 })
